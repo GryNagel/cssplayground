@@ -8,6 +8,8 @@ var gulp = require('gulp'),
   browserSync = require('browser-sync').create(),
   argv = require('minimist')(process.argv.slice(2)),
   chalk = require('chalk');
+  var gulp = require('gulp');
+  var sass = require('gulp-sass');
 
 /**
  * Normalize all paths to be plain, paths with no leading './',
@@ -258,9 +260,21 @@ gulp.task('patternlab:connect', gulp.series(function (done) {
   });
 }));
 
+
+
+gulp.task('sass', function () {
+  return gulp.src('./css/sass/**/*.scss')
+    .pipe(sass.sync().on('error', sass.logError))
+    .pipe(gulp.dest('./css'));
+});
+
+gulp.task('sass:watch', function () {
+  gulp.watch('./css/sass/**/*.scss', ['sass']);
+});
+
 /******************************************************
  * COMPOUND TASKS
 ******************************************************/
 gulp.task('default', gulp.series('patternlab:build'));
 gulp.task('patternlab:watch', gulp.series('patternlab:build', watch));
-gulp.task('patternlab:serve', gulp.series('patternlab:build', 'patternlab:connect', watch));
+gulp.task('serve', gulp.series('patternlab:build', 'patternlab:connect', 'sass', watch));
